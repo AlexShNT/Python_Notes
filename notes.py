@@ -17,9 +17,31 @@ def prn_cmd():
 
 
 def main():
-    print ("Программа для создания и редактирования заметок (ДЗ)")
+    print ("Программа для создания, просмотра и редактирования заметок (ДЗ)")
 
-    prn_cmd()
+    while True:
+        prn_cmd()
+        try:
+            command = input("\nВведите команду: ").strip().lower()
+            if command == 'add':
+                add_note()
+            elif command == 'pr':
+                read_note()
+            elif command == 'ls':
+                list_notes()
+            elif command == 'edt':
+                edit_note()
+            elif command == 'rm':
+                remove_note()
+            elif command == 'f1':
+                prn_cmd()
+            elif command == 'ex':
+                print("Выход из программы.")
+                break
+            else:
+                print(f"Неизвестная команда: {command}. Введите 'help' для списка команд.")
+        except Exception as e:
+            print(f"Произошла ошибка: {e}")
 
 
 
