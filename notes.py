@@ -37,7 +37,6 @@ def save_notes(notes):
 def list_notes():
     notes = load_notes()
 
-    print(noteCount)
     for note in notes[1:]:
                 print(f"{note[ID_NOTE]}) {note[TITLE_NOTE]} | {note[BODY_NOTE][:10] + '...' if len(note[BODY_NOTE]) > 10 else note[BODY_NOTE]} | (Последнее изменение: {note[DATE_NOTE]})")
 
@@ -51,10 +50,10 @@ def add_note():
         noteCount = int(notes[0][TITLE_NOTE])
 
         note = {
-            'id': noteCount + 1,
-            'title': input("Введите заголовок заметки: "),
-            'body': input("Введите текст заметки: "),
-            'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            ID_NOTE: noteCount + 1,
+            TITLE_NOTE: input("Введите заголовок заметки: "),
+            BODY_NOTE: input("Введите текст заметки: "),
+            DATE_NOTE: datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
 
         notes[0][TITLE_NOTE] = str(noteCount + 1)
@@ -65,7 +64,53 @@ def add_note():
     except Exception as e:
         print(f"Ошибка при добавлении заметки: {e}")
 
+def read_note():
+    try:
+        note_id = int(input("Введите ID заметки для чтения: "))
+        notes = load_notes()
+        for note in notes:
+            if note[ID_NOTE] == note_id:
+                print(f"ID: {note[ID_NOTE]}")
+                print(f"Заголовок: {note[TITLE_NOTE]}")
+                print(f"Тело: {note[BODY_NOTE]}")
+                print(f"Последнее изменение: {note[DATE_NOTE]}")
+                return
+        print(f'Заметка с ID {note_id} не найдена.')
+    except ValueError:
+        print("Ошибка: ID заметки должно быть числом.")
+    except Exception as e:
+        print(f"Ошибка при чтении заметки: {e}")
 
+def remove_note():
+    try:
+        note_id = int(input("Введите ID заметки для удаления: "))
+        if note_id <= 0: return
+        notes = load_notes()
+        notes = [note for note in notes if note[ID_NOTE] != note_id]
+        save_notes(notes)
+        print(f'Заметка с ID {note_id} успешно удалена!')
+    except ValueError:
+        print("Ошибка: ID заметки должно быть числом.")
+    except Exception as e:
+        print(f"Ошибка при удалении заметки: {e}")   
+
+def edit_note():
+    try:
+        note_id = int(input("Введите ID заметки для редактирования: "))
+        notes = load_notes()
+        for note in notes:
+            if note[ID_NOTE] == note_id:                 
+                note[TITLE_NOTE] = input(f"Введите новый заголовок заметки (текущий: {note[TITLE_NOTE]}): ") or note[TITLE_NOTE]
+                note[BODY_NOTE] = input(f"Введите новое тело заметки (текущее: {note[BODY_NOTE]}): ") or note[BODY_NOTE]
+                note[DATE_NOTE] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                save_notes(notes)
+                print(f'Заметка с ID {note_id} успешно обновлена!')
+                return
+        print(f'Заметка с ID {note_id} не найдена.')
+    except ValueError:
+        print("Ошибка: ID заметки должно быть числом.")
+    except Exception as e:
+        print(f"Ошибка при редактировании заметки: {e}")   
 
 
 def prn_cmd():
@@ -81,11 +126,13 @@ def prn_cmd():
 
 def main():
     print ("Программа для создания, просмотра и редактирования заметок (ДЗ)")
+    print(' ')
+    prn_cmd()
 
     while True:
-        prn_cmd()
+
         try:
-            command = input("\nВведите команду: ").strip().lower()
+            command = input("\nВведите команду (f1: список команд): ").strip().lower()
             if command == 'add':
                 add_note()
             elif command == 'pr':
@@ -105,9 +152,6 @@ def main():
                 print(f"Неизвестная команда: {command}. Введите 'help' для списка команд.")
         except Exception as e:
             print(f"Произошла ошибка: {e}")
-
-
-
 
 
 if __name__ == "__main__":
