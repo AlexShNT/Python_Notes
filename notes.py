@@ -35,16 +35,32 @@ def save_notes(notes):
 # ------------------------------------------------------
 
 def list_notes():
-    notes = load_notes()
-
-    for note in notes[1:]:
-                print(f"{note[ID_NOTE]}) {note[TITLE_NOTE]} | {note[BODY_NOTE][:10] + '...' if len(note[BODY_NOTE]) > 10 else note[BODY_NOTE]} | (Последнее изменение: {note[DATE_NOTE]})")
+    try:
+        date_filter = input("Введите дату (YYYY-MM-DD) для фильтрации или оставьте пустым для вывода всех: ").strip()
+        notes = load_notes()
+        
+        if date_filter:
+            try:
+                filter_date = datetime.strptime(date_filter, '%Y-%m-%d').date()
+                notes = [note for note in notes if datetime.strptime(note[DATE_NOTE], '%Y-%m-%d %H:%M:%S').date() == filter_date]
+            except ValueError:
+                print("Неверный формат даты. Показаны все заметки.")
+        
+        if notes:
+            print("ID|   Заголовок   | Текст заметки | Время последнего изменения ")
+            print("--------------------------------------------------------------------------------")
+            for note in notes:
+                if note[ID_NOTE] == 0: continue
+                print(f"{note[ID_NOTE]}). {note[TITLE_NOTE][:10] + '...' if len(note[TITLE_NOTE]) > 10 else (note[TITLE_NOTE] + ' ' * (13 - len(note[TITLE_NOTE])))} | " +
+                      f"{note[BODY_NOTE][:10] + '...' if len(note[BODY_NOTE]) > 10 else note[BODY_NOTE] + ' ' * (13 - len(note[BODY_NOTE]))} | (Последнее изменение: {note[DATE_NOTE]}) |")
+        else:
+            print('Нет доступных заметок.')
+    except Exception as e:
+        print(f"Ошибка при выводе списка заметок: {e}")
 
 
 def add_note():
     try:
-        # title = input("Введите заголовок заметки: ")
-        # body = input("Введите текст заметки: ")
         notes = load_notes()
 
         noteCount = int(notes[0][TITLE_NOTE])
